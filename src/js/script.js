@@ -37,25 +37,42 @@ const RW = (function() {
       },
       handler(params) {
         let content = '';
-        console.log(params);
         switch (params.t) {
+          // case 'firebase':
+            // params['event_name'] = (params.ga_event_name == undefined || params.ga_event_name == null) ? '' : params.ga_event_name;
+            // switch (params.event_name) {
+            //  case '':
+            //    content = 'catioro';
+            //    break;
+            //  case 'ScreenView':
+            //    params.t = 'screenview';
+            //    content = `[${params.appId}] ${params.screenName}`;
+            //    break;
+            //  case 'Interaction':
+            //    params.t = 'event';
+            //    content =
+            //      `[${params.appId}]` +
+            //      [params.eventCategory, params.eventAction, params.eventLabel]
+            //        .map(val => val || '<empty>')
+            //        .join(' > ');
+            //    break;
+            //  default:
+            //    console.log("I'm here man!");
+            //    params.t = 'firebase';
+                // content = `[${params.appId}] ${params.name}`;
+            //    content = params.ga_event_name;
+            //    console.log(content);
+            //}
+            // break;
           case 'firebase':
-            switch (params.name) {
-              case 'ScreenView':
-                params.t = 'screenview';
-                content = `[${params.appId}] ${params.screenName}`;
-                break;
-              case 'Interaction':
-                params.t = 'event';
-                content =
-                  `[${params.appId}]` +
-                  [params.eventCategory, params.eventAction, params.eventLabel]
-                    .map(val => val || '<empty>')
-                    .join(' > ');
-                break;
-              default:
-                params.t = 'firebase';
-                content = `[${params.appId}] ${params.name}`;
+            if(params.ga_event_name.length > 0 && params.ga_screen.length > 0) {
+              if(params.ga_event_name.startsWith('menu_')) {
+                content = [params.eventCategory, params.eventAction, params.eventLabel]
+                  .map(val => val || '<empty>')
+                  .join(' > ');
+              } else {
+                content = `${params.ga_screen} ${params.ga_event_name}`;
+              }
             }
             break;
           case 'pageview':
@@ -67,6 +84,7 @@ const RW = (function() {
             // color = "#3333CC";
             break;
           case 'event':
+            // ver de encapsular esses "prints" em funções
             content = [params.ec, params.ea, params.el]
               .map(val => val || '<empty>')
               .join(' > ');
@@ -185,7 +203,6 @@ const RW = (function() {
     }
   }
   function init({ tool, data }) {
-    console.log(tool, data);
     if (modules[tool]) modules[tool].handler(data);
   }
 
