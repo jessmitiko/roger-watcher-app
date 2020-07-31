@@ -1,5 +1,6 @@
 /* global jQuery: false, window: false, document: false, chrome: false */
 
+let last = {};
 const socket = io();
 const RW = (function() {
   // const info = chrome.runtime.getManifest();
@@ -23,56 +24,34 @@ const RW = (function() {
         );
       },
       appendNewHit(obj) {
-        const clone = this.template.clone();
-        const content = decode(obj.content);
-        clone.addClass(obj.parameters.t).data('qs', obj.queryString);
-        clone.find('.label').addClass(obj.status);
-        clone
-          .find('.content')
-          .attr('title', content)
-          .text(content);
-        clone.find('table.queryString').html(objectToRows(obj.parameters));
-        panel.append(clone);
-        if (RW.autoscroll) clone.get(0).scrollIntoView({ behavior: 'smooth' });
+        const [ tds ] = (obj.parameters.ga_event_id && obj.parameters.ga_screen_id && obj.parameters.t == 'firebase') ? document.querySelectorAll(`td[title='${last.ga_event_id}']`) : [undefined];
+
+        if(tds && obj.parameters.ga_screen_id	== last.ga_screen_id	&& obj.parameters.ga_event_id == last.ga_event_id) {
+          const table = tds.parentNode.parentNode;
+          // const parameters = JSON.stringify(obj.parameters).replace(/("ga_event_origin"|"ga_event_name"|"ga_group_name"|"ga_list_length"|"ga_screen_class"|"ga_screen_id"|"ga_screen"|"ga_event_id")(.*?),|,"t":".*"/g, '');
+          const parameters = JSON.stringify(obj.parameters).replace(/"ga_(.*?),|,"t":".*"/g, '');
+          const text = objectToRows(JSON.parse(parameters));
+
+          table.innerHTML += text;
+        } else {
+          const clone = this.template.clone();
+          const content = decode(obj.content);
+          clone.addClass(obj.parameters.t).data('qs', obj.queryString);
+          clone.find('.label').addClass(obj.status);
+          clone.find('.content').attr('title', content).text(content);
+          clone.find('table.queryString').html(objectToRows(obj.parameters));
+          panel.append(clone);
+          if (RW.autoscroll) clone.get(0).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        last = JSON.parse(obj.queryString);
       },
       handler(params) {
         let content = '';
         switch (params.t) {
-          // case 'firebase':
-            // params['event_name'] = (params.ga_event_name == undefined || params.ga_event_name == null) ? '' : params.ga_event_name;
-            // switch (params.event_name) {
-            //  case '':
-            //    content = 'catioro';
-            //    break;
-            //  case 'ScreenView':
-            //    params.t = 'screenview';
-            //    content = `[${params.appId}] ${params.screenName}`;
-            //    break;
-            //  case 'Interaction':
-            //    params.t = 'event';
-            //    content =
-            //      `[${params.appId}]` +
-            //      [params.eventCategory, params.eventAction, params.eventLabel]
-            //        .map(val => val || '<empty>')
-            //        .join(' > ');
-            //    break;
-            //  default:
-            //    console.log("I'm here man!");
-            //    params.t = 'firebase';
-                // content = `[${params.appId}] ${params.name}`;
-            //    content = params.ga_event_name;
-            //    console.log(content);
-            //}
-            // break;
           case 'firebase':
             if(params.ga_event_name.length > 0 && params.ga_screen.length > 0) {
-              if(params.ga_event_name.startsWith('menu_')) {
-                content = [params.eventCategory, params.eventAction, params.eventLabel]
-                  .map(val => val || '<empty>')
-                  .join(' > ');
-              } else {
-                content = `${params.ga_screen} ${params.ga_event_name}`;
-              }
+              content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.ga_screen} ${params.ga_event_name}`;
             }
             break;
           case 'pageview':
@@ -84,10 +63,7 @@ const RW = (function() {
             // color = "#3333CC";
             break;
           case 'event':
-            // ver de encapsular esses "prints" em funções
-            content = [params.ec, params.ea, params.el]
-              .map(val => val || '<empty>')
-              .join(' > ');
+            content = [params.ec, params.ea, params.el].map(val => val || '<empty>').join(' > ');
             // color = "#33CC33";
             break;
           case 'transaction':
@@ -121,6 +97,17 @@ const RW = (function() {
           .map(this.parseByType)
           .filter(error => error.length > 0);
 
+        // if(params.t == 'firebase') {
+        //  if(lastParams.length < 1) lastParams = JSON.stringify(params);
+
+        //  if(lastParams.includes(params.ga_event_id) && lastParams.includes(params.ga_screen_id)) {
+        //    var currenty = JSON.stringify(params).replace('{', '');
+        //    lastParams += lastParams.replace('}', ',') + currenty;
+        //  } else {
+        //    lastParams = JSON.stringify(params);
+        //  }
+        // }
+        
         this.appendNewHit({
           parameters: params,
           queryString: JSON.stringify(params),
@@ -184,6 +171,7 @@ const RW = (function() {
         return `<td class="key" title="${key}">${keyName}</td>
 					<td class="value" title="${value}">${value}</td>`;
       });
+
     return html.length ? '<tr>' + html.join('</tr><tr>') + '</tr>' : '';
   }
 
