@@ -1,3 +1,5 @@
+const validation = require('./src/utils/validation');
+const structure = require('./src/utils/map');
 const { spawn } = require('child_process');
 const express = require('express');
 const path = require('path');
@@ -15,19 +17,27 @@ app.get('/', (_, res) => {
   res.sendFile(__dirname + '/src/panel.html');
 });
 
+io.on('connection', socket => {
+  socket.on('hit attached', msg => {
+    validation(msg, structure); 
+  });
+});
+
 http.listen(3000, () => {
   console.log('listening on port 3000.');
 });
 
-io.on('create_connection', ({ tool, app }) => {
-  if (tool === 'universal_analytics') return startGA();
-  if (tool === 'firebase_analytics') return startFirebase(app);
-});
+// io.on('create_connection', ({ tool, app }) => {
+//  console.log(tool);
+//  console.log(app);
+//  if (tool === 'universal_analytics') return startGA();
+//  if (tool === 'firebase_analytics') return startFirebase(app);
+// });
 
-io.on('end_connection', ({ tool }) => {
-  if (tool === 'universal_analytics') return endGA();
-  if (tool === 'firebase_analytics') return endFirebase();
-});
+// io.on('end_connection', ({ tool }) => {
+//  if (tool === 'universal_analytics') return endGA();
+//  if (tool === 'firebase_analytics') return endFirebase();
+// });
 
 function startGA() {
   endInstance('ga-debug', 'ga-logcat');
@@ -180,4 +190,4 @@ function endInstance(...names) {
 }
 
 startGA();
-startFirebase('');
+// startFirebase('');

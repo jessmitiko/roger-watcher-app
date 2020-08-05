@@ -209,4 +209,8 @@ const RW = (function() {
   };
 })();
 
-socket.on('hit sent', msg => RW.init(msg));
+socket.on('hit sent', msg => {  
+  RW.init(msg);
+  // only treat enhanced-ecommerce hits por hora
+  if(msg.data.ec == 'enhanced-ecommerce') socket.emit('hit attached', msg);
+});
