@@ -56,6 +56,7 @@ module.exports = function(msg, structure) {
                 if(!toolParams.delete(param)) nonExistentParams.push(param); // verificar tipo e formato
             });
 
+            // printar o log
             if(Array.from(toolParams).length > 0) console.log(`os parametros ${Array.from(toolParams)} (${msg.data.cd}) de ${name} aparecem no hit, mas não no mapa de coleta`);
             if(nonExistentParams.length > 0) console.log(`${nonExistentParams} de ${name} (${msg.data.cd}) não existe nos logs do GA`);
         }
