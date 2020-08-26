@@ -48,10 +48,11 @@ const RW = (function() {
       },
       handler(params) {
         let content = '';
+        // console.log(params);
         switch (params.t) {
           case 'firebase':
-            if(params.ga_event_name.length > 0 && params.ga_screen.length > 0) {
-              content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.ga_screen} ${params.ga_event_name}`;
+            if(params.ga_event_name.length > 0 && params.screenName.length > 0) {
+              content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.screenName} ${params.ga_event_name}`;
             }
             break;
           case 'pageview':
@@ -212,5 +213,5 @@ const RW = (function() {
 socket.on('hit sent', msg => {  
   RW.init(msg);
   // only treat enhanced-ecommerce hits por hora
-  if(msg.data.ec == 'enhanced-ecommerce') socket.emit('hit attached', msg);
+  // if(msg.data.ec == 'enhanced-ecommerce') socket.emit('hit attached', msg);
 });
