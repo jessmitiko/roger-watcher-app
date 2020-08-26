@@ -25,7 +25,7 @@ const RW = (function() {
       },
       appendNewHit(obj) {
         const [ tds ] = (obj.parameters.ga_event_id && obj.parameters.ga_screen_id && obj.parameters.t == 'firebase') ? document.querySelectorAll(`td[title='${last.ga_event_id}']`) : [undefined];
-
+        
         if(tds && obj.parameters.ga_screen_id	== last.ga_screen_id	&& obj.parameters.ga_event_id == last.ga_event_id) {
           const table = tds.parentNode.parentNode;
           // const parameters = JSON.stringify(obj.parameters).replace(/("ga_event_origin"|"ga_event_name"|"ga_group_name"|"ga_list_length"|"ga_screen_class"|"ga_screen_id"|"ga_screen"|"ga_event_id")(.*?),|,"t":".*"/g, '');
@@ -48,11 +48,16 @@ const RW = (function() {
       },
       handler(params) {
         let content = '';
-        // console.log(params);
         switch (params.t) {
           case 'firebase':
-            if(params.ga_event_name.length > 0 && params.screenName.length > 0) {
-              content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.screenName} ${params.ga_event_name}`;
+            if(params.ga_event_name && params.screenName) {
+              if(params.ga_event_name.length > 0 && params.screenName.length > 0) {
+                content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.screenName} ${params.ga_event_name}`;
+              }
+            } else if(params.ga_event_name && params.ga_screen) {
+              if(params.ga_event_name.length > 0 && params.ga_screen.length > 0) {
+                content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.ga_screen} ${params.ga_event_name}`;
+              }
             }
             break;
           case 'pageview':
