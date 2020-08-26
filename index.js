@@ -1,5 +1,5 @@
-const validation = require('./src/utils/validation');
-const structure = require('./src/utils/map');
+// const validation = require('./src/utils/validation');
+// const structure = require('./src/utils/map');
 const { spawn } = require('child_process');
 const express = require('express');
 const path = require('path');
@@ -85,11 +85,11 @@ function endGA() {
 function startFirebase(app) {
   endInstance('fa-debug', 'fa-verbose', 'fa-verbose-svc', 'fa-main');
 
-  //createADBInstance({
-  //  name: 'fa-debug',
-  //  params: ['shell', 'setprop', 'debug.firebase.analytics.app', app],
-  //  handler: console.log,
-  //});
+  createADBInstance({
+    name: 'fa-debug',
+    params: ['shell', 'setprop', 'debug.firebase.analytics.app', app],
+    handler: console.log,
+  });
   createADBInstance({
     name: 'fa-verbose',
     params: ['shell', 'setprop', 'log.tag.FA', 'VERBOSE'],
@@ -190,4 +190,4 @@ function endInstance(...names) {
 }
 
 startGA();
-// startFirebase('');
+startFirebase('');
