@@ -44,7 +44,7 @@ const RW = (function() {
           if (RW.autoscroll) clone.get(0).scrollIntoView({ behavior: 'smooth' });
         }
 
-        last = JSON.parse(obj.queryString);
+        if(obj.parameters.t == 'firebase') last = JSON.parse(obj.queryString);
       },
       handler(params) {
         let content = '';
