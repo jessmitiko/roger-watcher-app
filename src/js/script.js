@@ -58,6 +58,8 @@ const RW = (function() {
               if(params.ga_event_name.length > 0 && params.ga_screen.length > 0) {
                 content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.ga_screen} ${params.ga_event_name}`;
               }
+            } else {
+              content = (params.ga_event_name.startsWith('menu_')) ? [params.eventCategory, params.eventAction, params.eventLabel].map(val => val || '<empty>').join(' > ') : `${params.ga_event_name}`;
             }
             break;
           case 'pageview':
