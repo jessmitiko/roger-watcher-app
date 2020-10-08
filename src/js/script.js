@@ -104,17 +104,6 @@ const RW = (function() {
         ]
           .map(this.parseByType)
           .filter(error => error.length > 0);
-
-        // if(params.t == 'firebase') {
-        //  if(lastParams.length < 1) lastParams = JSON.stringify(params);
-
-        //  if(lastParams.includes(params.ga_event_id) && lastParams.includes(params.ga_screen_id)) {
-        //    var currenty = JSON.stringify(params).replace('{', '');
-        //    lastParams += lastParams.replace('}', ',') + currenty;
-        //  } else {
-        //    lastParams = JSON.stringify(params);
-        //  }
-        // }
         
         this.appendNewHit({
           parameters: params,
@@ -219,6 +208,4 @@ const RW = (function() {
 
 socket.on('hit sent', msg => {  
   RW.init(msg);
-  // only treat enhanced-ecommerce hits por hora
-  // if(msg.data.ec == 'enhanced-ecommerce') socket.emit('hit attached', msg);
 });
