@@ -403,7 +403,6 @@ window.metadata = {
       name: 'exception fatal',
       rule: commonRules.boolean
     }
-    // Firebase params
   }
 };
 // for(let i=0;i<=200;i++){
