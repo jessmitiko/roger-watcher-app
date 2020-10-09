@@ -19,14 +19,17 @@ jQuery('#autoscroll').on('change', function() {
 });
 
 jQuery('.connect').on('click', function() {
-  const connect = confirm('Deseja conectar ou desconectar?');
+  const connect = confirm('Deseja conectar ou desconectar? (para desconectar clique em Cancelar)');
   const message = connect ? 'create' : 'end';
   const tool = this.id.split('-').pop();
+  console.log(message, tool);
   let app;
   if (connect && tool === 'firebase_analytics')
     app = prompt('Qual o Bundle ID?');
 
   socket.emit(`${message}_connection`, { tool, app });
+
+  (message == 'create') ? this.classList.add('activate') : this.classList.remove('activate');
 });
 
 RW.busca.on('keyup', function() {
